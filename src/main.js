@@ -1,15 +1,16 @@
-import Observed from './core';
+import Bindings from './core';
 
-window.data = Observed({
-    name: 'cekavo',
+window.data = Bindings({
+    name: 'Ilya',
     country: 'Italy'
 });
 
 console.log(data);
 console.log(data.name);
+console.log(data.country);
 
-window.data.name = 'Ljupco';
-window.data.country = 'od Italija';
+window.data.name = 'Marko';
+window.data.country = 'di Mosca';
 
 /*
 * Proxy

@@ -10,8 +10,9 @@
 <body>
     <div id="root">
         <form action="">
-            <input id="name" type="text">
-            <input type="text" id="country">
+            <input data-bind="name" type="text">
+            <input data-bind="country" type="text">
+            <label for="someInput"><input id="someInput" type="text" name="" data-bind="name"></label>
         </form>
     </div>
     <script src="dist/bundle.js"></script>

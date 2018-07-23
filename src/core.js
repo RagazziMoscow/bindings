@@ -1,16 +1,34 @@
+import {bindDir} from './constants';
+
 const bindings = {
 
 };
 
+//initizlize
+export default function Bindings(target) {
 
-export default function Observed(target) {
+    const rootElement = document.querySelector("#root");
 
-    //init
     for (let prop of Object.keys(target)) {
-        var element = document.getElementById(prop);
-        
-        if (prop) element.value = target[prop];
-        Object.defineProperty(bindings, prop, {value: element});
+
+        Object.defineProperty(bindings, prop, {
+            value: {
+                boundVal: target[prop],
+                elements: []
+            },
+            enumerable: true
+        });
+
+        const bindElements = rootElement.querySelectorAll(`[${bindDir}]`);
+
+        bindElements.forEach(bindElement => {
+            if (bindElement.getAttribute(bindDir) === prop) {
+                bindings[prop].elements.push(bindElement);
+                if (prop) bindElement.value = target[prop];
+            }
+        });
+
+
     }
 
     const handler = {
@@ -22,9 +40,27 @@ export default function Observed(target) {
 
             // Стандартная установка нового значения
             obj[prop] = newValue;
-            bindings[prop].value = newValue;
+
+            // Обновление привязок
+            bindings[prop].boundVal = newValue;
+            bindings[prop].elements.forEach(element => {
+                element.value = newValue;
+            });
+
             return true;
         }
     };
-    return new Proxy(target, handler);
+
+    const proxy = new Proxy(target, handler);
+
+    // обновление значений при обновлении элементов
+    Object.keys(bindings).forEach((bindingValue) => {
+        bindings[bindingValue].elements.forEach(bindElement => {
+            bindElement.addEventListener('input', (e) => {
+                proxy[bindingValue] = e.target.value;
+            });
+        });
+    });
+
+    return proxy;
 }
