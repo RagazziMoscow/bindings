@@ -1,4 +1,5 @@
 import {bindDir} from './constants';
+import {containerDir} from './constants';
 
 const bindings = {
 
@@ -7,7 +8,7 @@ const bindings = {
 //initizlize
 export default function Bindings(target) {
 
-    const rootElement = document.querySelector("#root");
+    const rootElement = document.querySelector(`[${containerDir}]`);
 
     for (let prop of Object.keys(target)) {
 
@@ -36,7 +37,7 @@ export default function Bindings(target) {
             return obj[name];
         },
         set: function(obj, prop, newValue) {
-            console.log(`Значение свойства ${prop} изменилось с ${obj[prop]} на ${newValue}`);
+            console.log(`"${prop}" property value changed from "${obj[prop]}" to "${newValue}"`);
 
             // Стандартная установка нового значения
             obj[prop] = newValue;
