@@ -1,5 +1,8 @@
-import {bindDir} from './constants';
-import {containerDir} from './constants';
+import { containerDir } from './constants';
+import { bindDir } from './constants';
+import { ifDir } from './constants';
+
+const directives = [bindDir, ifDir];
 
 const bindings = {
 
@@ -20,12 +23,17 @@ export default function Bindings(target) {
             enumerable: true
         });
 
-        const bindElements = rootElement.querySelectorAll(`[${bindDir}]`);
+        const selectors = directives.map((dir) => `[${dir}]`).join(',');
+        const bindElements = rootElement.querySelectorAll(selectors);
 
         bindElements.forEach(bindElement => {
-            if (bindElement.getAttribute(bindDir) === prop) {
+
+            if (bindElement.getAttribute(bindDir) === prop || bindElement.getAttribute(ifDir) === prop) {
                 bindings[prop].elements.push(bindElement);
-                if (prop) bindElement.value = target[prop];
+
+                if (prop === bindDir) { 
+                    bindElement.value = target[prop];
+                }
             }
         });
 
@@ -39,13 +47,19 @@ export default function Bindings(target) {
         set: function(obj, prop, newValue) {
             console.log(`"${prop}" property value changed from "${obj[prop]}" to "${newValue}"`);
 
-            // Стандартная установка нового значения
+            // standart installing the new value
             obj[prop] = newValue;
 
-            // Обновление привязок
+            // bindings updating
             bindings[prop].boundVal = newValue;
             bindings[prop].elements.forEach(element => {
-                element.value = newValue;
+                if (element.hasAttribute(`${bindDir}`)) {
+                    element.value = newValue;
+                }
+
+                if (element.hasAttribute(`${ifDir}`)) {
+                    element.style.display = (newValue) ? "block" : "none";
+                }
             });
 
             return true;
@@ -54,7 +68,7 @@ export default function Bindings(target) {
 
     const proxy = new Proxy(target, handler);
 
-    // обновление значений при обновлении элементов
+    // values updating by elements updating
     Object.keys(bindings).forEach((bindingValue) => {
         bindings[bindingValue].elements.forEach(bindElement => {
             bindElement.addEventListener('input', (e) => {

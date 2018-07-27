@@ -2,7 +2,8 @@ import Bindings from './core';
 
 window.data = Bindings({
     name: 'Ilya',
-    country: 'Italy'
+    country: 'Italy',
+    showBlock: true
 });
 
 console.log(data);
